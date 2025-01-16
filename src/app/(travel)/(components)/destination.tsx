@@ -29,6 +29,7 @@ export const Destination = forwardRef((props: DestinationProps, ref: any) => {
   const pathname = usePathname();
   const { replace } = useRouter();
   const searchParams = useSearchParams();
+  const defaultDestination = searchParams.get("destination");
 
   const destinationRef = useRef<HTMLInputElement>(null);
 
@@ -89,6 +90,17 @@ export const Destination = forwardRef((props: DestinationProps, ref: any) => {
     }
   }, [openDestination]);
 
+  useEffect(() => {
+    if (defaultDestination) {
+      const initialDestination = options.find(
+        (destination) => destination.id.toString() === defaultDestination
+      );
+      if (initialDestination) {
+        setSelectedDestination(initialDestination);
+      }
+    }
+  }, [defaultDestination, options])
+
   return (
     <TravelCard.Section icon="MapPin" title="Destino">
       <Select.Root
@@ -96,7 +108,7 @@ export const Destination = forwardRef((props: DestinationProps, ref: any) => {
         onOpenChange={changeOpenDestination}
         value={selectedDestination?.id.toString() || ""}
         onValueChange={(value) => {
-          const selected = options.find((opt) => opt.id.toString() === value);
+          const selected = options.find((destination) => destination.id.toString() === value);
           handleSetDestination(selected || null);
           setOpenDestination(false);
         }}

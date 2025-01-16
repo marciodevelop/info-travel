@@ -4,68 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Popover } from "@/components/ui/popover";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { Minus, Plus } from "lucide-react";
-import { redirect, usePathname, useRouter, useSearchParams } from "next/navigation";
-import { forwardRef, use, useEffect, useImperativeHandle, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-
-export const Guests = forwardRef((_, ref: any) => {
-  const [adults, setAdults] = useState(1);
-  const [kids, setKids] = useState(0);
-  const [rooms, setRooms] = useState(1);
-
+export const Guests = () => {
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const { replace, push } = useRouter();
   const searchParams = useSearchParams();
 
-  function handleAdultsIncrement() {
-    setAdults((state) => state + 1);
+  function updateSearchParams(key: string, value: string) {
+    const query = new URLSearchParams(searchParams.toString());
+    query.set(key, value);
+    replace(`${pathname}?${query.toString()}`, { scroll: false });
   }
 
-  function handleAdultsDecrement() {
-    if (adults === 1) return;
-    setAdults((state) => state - 1);
-  }
-
-  function handleKidsIncrement() {
-    setKids((state) => state + 1);
-  }
-
-  function handleKidsDecrement() {
-    if (kids === 0) return;
-    setKids((state) => state - 1);
-  }
-
-  function handleRoomsIncrement() {
-    setRooms((state) => state + 1);
-  }
-
-  function handleRoomsDecrement() {
-    if (rooms === 1) return;
-    setRooms((state) => state - 1);
+  function getParamValue(param: string, defaultValue: number) {
+    const value = searchParams.get(param);
+    return value ? Number(value) : defaultValue;
   }
 
   function handleRedirectSearchPage() {
-    redirect('/search');
+    push(`/search?${searchParams.toString()}`, { scroll: false });
   }
 
-  useImperativeHandle(ref, () => {
-    return {
-      getAdults: () => adults,
-      getKids: () => kids,
-      getRooms: () => rooms,
-    };
-  });
-
-  useEffect(() => {
-    const query = new URLSearchParams(searchParams);
-    query.set("adults", adults.toString());
-    query.set("kids", kids.toString());
-    query.set("rooms", rooms.toString());
-
-    replace(`${pathname}?${query.toString()}`, {
-      scroll: false,
-    });
-  }, [adults, kids, rooms]);
+  const adults = getParamValue("adults", 1);
+  const kids = getParamValue("kids", 0);
+  const rooms = getParamValue("rooms", 1);
 
   return (
     <div className="flex gap-20 items-center">
@@ -88,14 +51,16 @@ export const Guests = forwardRef((_, ref: any) => {
                 <span className="text-xs">Adultos</span>
                 <div className="flex gap-2 items-center">
                   <button
-                    onClick={handleAdultsIncrement}
+                    onClick={() => updateSearchParams("adults", String(adults + 1))}
                     className="text-xs flex justify-center items-center size-6 rounded-full bg-[#E3EBF3]"
                   >
                     <Plus size="16px" />
                   </button>
                   <span className="text-xs font-semibold w-3">{adults}</span>
                   <button
-                    onClick={handleAdultsDecrement}
+                    onClick={() =>
+                      adults > 1 && updateSearchParams("adults", String(adults - 1))
+                    }
                     className="text-xs flex justify-center items-center size-6 rounded-full bg-[#E3EBF3]"
                   >
                     <Minus size="16px" />
@@ -106,33 +71,36 @@ export const Guests = forwardRef((_, ref: any) => {
                 <span className="text-xs">Crianças</span>
                 <div className="flex gap-2 items-center">
                   <button
-                    onClick={handleKidsIncrement}
+                    onClick={() => updateSearchParams("kids", String(kids + 1))}
                     className="text-xs flex justify-center items-center size-6 rounded-full bg-[#E3EBF3]"
                   >
                     <Plus size="16px" />
                   </button>
                   <span className="text-xs font-semibold w-3">{kids}</span>
                   <button
-                    onClick={handleKidsDecrement}
+                    onClick={() =>
+                      kids > 0 && updateSearchParams("kids", String(kids - 1))
+                    }
                     className="text-xs flex justify-center items-center size-6 rounded-full bg-[#E3EBF3]"
                   >
                     <Minus size="16px" />
                   </button>
                 </div>
               </div>
-
               <div className="flex w-full justify-between items-center py-4 border-b border-b-[#E3EBF3]">
                 <span className="text-xs">Quartos</span>
                 <div className="flex gap-2 items-center">
                   <button
-                    onClick={handleRoomsIncrement}
+                    onClick={() => updateSearchParams("rooms", String(rooms + 1))}
                     className="text-xs flex justify-center items-center size-6 rounded-full bg-[#E3EBF3]"
                   >
                     <Plus size="16px" />
                   </button>
                   <span className="text-xs font-semibold w-3">{rooms}</span>
                   <button
-                    onClick={handleRoomsDecrement}
+                    onClick={() =>
+                      rooms > 1 && updateSearchParams("rooms", String(rooms - 1))
+                    }
                     className="text-xs flex justify-center items-center size-6 rounded-full bg-[#E3EBF3]"
                   >
                     <Minus size="16px" />
@@ -143,7 +111,9 @@ export const Guests = forwardRef((_, ref: any) => {
           </PopoverContent>
         </Popover>
       </TravelCard.Section>
-      <Button onClick={handleRedirectSearchPage} className="rounded-[50px]">Pesquisar</Button>
+      <Button onClick={handleRedirectSearchPage} className="rounded-[50px]">
+        Pesquisar
+      </Button>
     </div>
   );
-});
+};
