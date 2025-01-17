@@ -19,15 +19,16 @@
 }
 
 .scrollbar-custom {
-  scrollbar-width: thin;
-  scrollbar-color: #4B5563 #E5E7EB;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
 .scrollbar-custom::-webkit-scrollbar {
-  width: 4px;
+  display: none;
 }
+
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background-color: #4B5563;
-  border-radius: 4px;
+  width: 0;
 }
 
 @layer base {

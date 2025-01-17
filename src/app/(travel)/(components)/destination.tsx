@@ -99,7 +99,7 @@ export const Destination = forwardRef((props: DestinationProps, ref: any) => {
         setSelectedDestination(initialDestination);
       }
     }
-  }, [defaultDestination, options])
+  }, [defaultDestination, options]);
 
   return (
     <TravelCard.Section icon="MapPin" title="Destino">
@@ -108,7 +108,9 @@ export const Destination = forwardRef((props: DestinationProps, ref: any) => {
         onOpenChange={changeOpenDestination}
         value={selectedDestination?.id.toString() || ""}
         onValueChange={(value) => {
-          const selected = options.find((destination) => destination.id.toString() === value);
+          const selected = options.find(
+            (destination) => destination.id.toString() === value
+          );
           handleSetDestination(selected || null);
           setOpenDestination(false);
         }}
@@ -125,8 +127,14 @@ export const Destination = forwardRef((props: DestinationProps, ref: any) => {
             }
           />
         </Select.Trigger>
-        <Select.Content className="w-[313px] bg-white border border-gray-100 rounded-md mt-6 h-[241px] overflow-y-scroll scrollbar-custom">
-          <div className="absolute size-0 border-[7px] ml-2 mt-[-14px] border-b-white border-l-transparent border-r-transparent border-t-transparent" />
+        <Select.Content
+          className={`w-[313px] bottom-0 z-50 bg-white border border-gray-100 rounded-md mt-6 min-h-12  scrollbar-custom ${
+            filteredDestination.length >= 5 && !selectedDestination
+              ? "h-[241px] overflow-y-scroll"
+              : "h-auto max-h-[241px]"
+          }`}
+        >
+          <div className="size-0 absolute border-[7px] ml-2 mt-[-14px] border-b-white border-l-transparent border-r-transparent border-t-transparent" />
           {selectedDestination ? (
             <Select.Item
               className="flex justify-start gap-4 outline-none items-center hover:bg-[#E3EBF3] w-full px-[13px] py-[10px]"
@@ -163,7 +171,7 @@ export const Destination = forwardRef((props: DestinationProps, ref: any) => {
                   </Select.Item>
                 ))
               ) : (
-                <div className="flex justify-center items-center h-full">
+                <div className="text-center mt-3">
                   <span className="text-sm text-[#698096]">
                     Nenhum destino encontrado
                   </span>

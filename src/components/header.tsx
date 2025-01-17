@@ -2,18 +2,41 @@
 import Link from "next/link";
 import { Home, LogIn } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function Header() {
+  const [showHeader, setShowHeader] = useState(true);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const isSearchPage = pathname === "/search";
+  const isSearchPage = pathname.includes("/search");
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        setShowHeader(false);
+      } else {
+        setShowHeader(true);
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <header
-      className={`h-[60px] w-full flex justify-between items-center px-[100px] ${
-        isSearchPage ? "bg-white" : "bg-transparent"
-      }`}
+      className={`sticky top-0 h-[60px] flex justify-between items-center px-[100px] 
+        ${
+          showHeader ? "opacity-100" : "opacity-0"
+        } transition-opacity duration-300
+      ${isSearchPage ? "bg-white" : "bg-transparent"}`}
     >
       <h1 className="text-xl leading-[26px] font-bold">Infotravel</h1>
 
