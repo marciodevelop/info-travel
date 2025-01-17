@@ -7,8 +7,9 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { forwardRef } from "react";
+import { forwardRef, useEffect } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { addDays, isBefore, isSameDay } from "date-fns";
 
 export const ExitDate = forwardRef((_, ref: any) => {
   const pathname = usePathname();
@@ -16,9 +17,12 @@ export const ExitDate = forwardRef((_, ref: any) => {
   const searchParams = useSearchParams();
 
   const currentParams = new URLSearchParams(searchParams);
+
+  const defaultDate = addDays(new Date(), 1);
+
   const currentDate = currentParams.get("exitDate")
     ? new Date(currentParams.get("exitDate") as string)
-    : new Date();
+    : defaultDate;
 
   const handleDateChange = (newDate: Date | undefined) => {
     if (!newDate) return;
@@ -27,6 +31,19 @@ export const ExitDate = forwardRef((_, ref: any) => {
       scroll: false,
     });
   };
+
+  const isDisabledDate = (date: Date) => {
+    return isBefore(date, new Date()) || isSameDay(date, new Date());
+  };
+
+  useEffect(() => {
+    if (!currentParams.get("exitDate")) {
+      currentParams.set("exitDate", defaultDate.toISOString());
+      replace(`${pathname}?${currentParams.toString()}`, {
+        scroll: false,
+      });
+    }
+  }, [currentParams, defaultDate, pathname, replace]);
 
   return (
     <TravelCard.Section
@@ -50,6 +67,7 @@ export const ExitDate = forwardRef((_, ref: any) => {
           <Calendar
             mode="single"
             locale={ptBR}
+            disabled={isDisabledDate}
             defaultMonth={currentDate}
             selected={currentDate}
             onSelect={handleDateChange}
